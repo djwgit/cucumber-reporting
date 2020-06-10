@@ -1,18 +1,3 @@
-[![Travis Status](https://img.shields.io/travis/damianszczepanik/cucumber-reporting/master.svg?label=Travis%20bulid)](https://travis-ci.org/damianszczepanik/cucumber-reporting)
-[![AppVeyor Status](https://img.shields.io/appveyor/ci/damianszczepanik/cucumber-reporting/master.svg?label=AppVeyor%20build)](https://ci.appveyor.com/project/damianszczepanik/cucumber-reporting/history)
-[![Shippable Status](https://img.shields.io/shippable/5844689c9d1f3e0f0057631a/master.svg?label=Shippable%20build)](https://app.shippable.com/projects/5844689c9d1f3e0f0057631a)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-blue.svg)](http://damianszczepanik.github.io/cucumber-html-reports/overview-features.html)
-
-[![Coverage Status](https://codecov.io/gh/damianszczepanik/cucumber-reporting/branch/master/graph/badge.svg?label=Unit%20tests%20coverage)](https://codecov.io/github/damianszczepanik/cucumber-reporting)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=net.masterthought%3Acucumber-reporting&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=net.masterthought%3Acucumber-reporting)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=net.masterthought%3Acucumber-reporting&metric=security_rating)](https://sonarcloud.io/dashboard?id=net.masterthought%3Acucumber-reporting)
-[![Codacy](https://api.codacy.com/project/badge/grade/7f206992ed364f0896490057fdbdaa2e)](https://www.codacy.com/app/damianszczepanik/cucumber-reporting)
-[![Codebeat](https://codebeat.co/badges/cb097d5a-280a-4867-8120-d6f03a874861)](https://codebeat.co/projects/github-com-damianszczepanik-cucumber-reporting)
-[![Vulnerabilities](https://snyk.io/test/github/damianszczepanik/cucumber-reporting/badge.svg)](https://snyk.io/org/damianszczepanik/project/6a2fe301-d56c-49e7-8c78-cd3ff09c3828)
-
-[![Maven Central](https://img.shields.io/maven-central/v/net.masterthought/cucumber-reporting.svg)](http://search.maven.org/#search|gav|1|g%3A%22net.masterthought%22%20AND%20a%3A%22cucumber-reporting%22)
-[![License](https://img.shields.io/badge/license-GNU%20LGPL%20v2.1-blue.svg)](https://raw.githubusercontent.com/damianszczepanik/cucumber-reporting/master/LICENCE)
-[![Contributors](https://img.shields.io/github/contributors/damianszczepanik/cucumber-reporting.svg)](https://github.com/damianszczepanik/cucumber-reporting/graphs/contributors)
 
 # Publish pretty [cucumber](https://cucumber.io/) reports
 
@@ -24,6 +9,24 @@ It publishes pretty html reports with charts showing the results of cucumber run
 Cucumber is a test automation tool following the principles of Behavioural Driven Design and living documentation. Specifications are written in a concise human readable form and executed in continuous integration.
 
 This project allows you to publish the results of a cucumber run as pretty html reports. In order for this to work you must generate a cucumber json report. The project converts the json report into an overview html linking to separate feature files with stats and results.
+
+
+## Standalone CLI
+java -jar cucumber-reporting.jar 
+
+- required parameters
+  - -json : cucumber test result json file
+  - -input : a path that has multiple json files
+  
+- optional parameters
+  - -output : test report output folder
+  - -project : project name to show in the table above the report result table.
+  - -note : infos to show in the info table (top-right corner on the page) 
+  
+ e.g.
+ ```
+  java -jar cucumber-reporting.jar -json ./result.json -project 'AppName Daily Build Test` -note buildNum:233 ios_version:13.2
+```
 
 ## Install
 

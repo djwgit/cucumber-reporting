@@ -28,10 +28,15 @@ public class CucumberReport {
 
     // usage
     public static void printUsage() {
-        System.out.println("need json file, or path to json files !");
-        System.out.println("e.g.  java -jar CucumberReport.jar -output ./ -d ./jsons");
-        System.out.println("e.g.  java -jar CucumberReport.jar -output ./ -f ./report1.json ./report2.json");
-        System.out.println("if -output not specified, it write to current dir.");
+        System.out.println("\nneed json file, or path to json files !");
+        System.out.println("e.g.  \njava -jar cucumber-reporting.jar -output ./report -input ./jsons");
+        System.out.println("java -jar cucumber-reporting.jar -json ./report1.json ./report2.json");
+        System.out.println("if -output not specified, it writes to current dir.");
+        System.out.println("\noptional infos to show in the table above result:");
+        System.out.println("-project FieldMapsSF");
+//        System.out.println("-buildnum 121");
+        System.out.println("\noptional notes to show in top-right corner of report page: e.g.");
+        System.out.println("-note branch:signin254 build:daily#232");
         System.exit(1);
     }
 
@@ -73,32 +78,28 @@ public class CucumberReport {
         // parse out the cli arguments
         Map<String, List<String>> params = getCommandLineArgs(args);
 
-        // check output given, if not, use current dir
-        String outputdir;
-        if (params.containsKey("output")){
-            outputdir = params.get("output").get(0);
-        } else {
-            outputdir= FileSystems.getDefault().getPath(".").toAbsolutePath().toString();
-        }
+        ///////////////////////////////////////////////////////////
+        // REQUIRED parameters
+        ///////////////////////////////////////////////////////////
+        //  (json file or dir): -f or -d
 
         // need -f or -d, not both
-        if ((params.containsKey("d") && params.containsKey("f")) || (!params.containsKey("d") && !params.containsKey("f"))) {
+        if ((params.containsKey("input") && params.containsKey("json")) || (!params.containsKey("input") && !params.containsKey("json"))) {
             printUsage();
         }
 
-        // json files array
+        // -f: json files array
         List<String> jsonFiles = new ArrayList<>();
-
-        // if f
-        if (params.containsKey("f")) {
-            for (String file : params.get("f")){
+        if (params.containsKey("json")) {
+            for (String file : params.get("json")){
+                System.out.println("json:" + file);
                 jsonFiles.add(file);
             }
         }
-        // if d
-        else if (params.containsKey("d")) {
-            String jsonFilesPath = params.get("d").get(0);
-            System.out.println(jsonFilesPath);
+        // -d: a json file folder
+        else if (params.containsKey("input")) {
+            String jsonFilesPath = params.get("input").get(0);
+            System.out.println("input:" + jsonFilesPath);
             // list all json files within the folder
             File f = new File(jsonFilesPath);
             FilenameFilter filter = new FilenameFilter() {
@@ -118,18 +119,70 @@ public class CucumberReport {
             printUsage();
         }
 
-        // output html report folder
+
+        //////////////////////////////////////////////////////////
+        // OPTIONAL parameters:
+        //////////////////////////////////////////////////////////
+
+        // table above result table:
+        // -------------------------------------------
+        // | Project   | Number | Date               |
+        // | FieldMaps | 232    | 10 Jun 2020, 08:36 |
+        // -------------------------------------------
+
+        // -output
+        // report output dir. if not specified, use current dir
+        String outputdir;
+        if (params.containsKey("output")){
+            outputdir = params.get("output").get(0);
+        } else {
+            outputdir= FileSystems.getDefault().getPath(".").toAbsolutePath().toString();
+        }
+        System.out.println("outputdir:" + outputdir);
         File reportOutputDirectory = new File(outputdir);
 
-        String buildNumber = "101";
-        String projectName = "Live Demo Project";
+        // -project
+        String projectName = "";
+        if (params.containsKey("project")) {
+            projectName = params.get("project").get(0);
+        }
+        System.out.println("project:" + projectName);
         Configuration configuration = new Configuration(reportOutputDirectory, projectName);
-        configuration.setBuildNumber(buildNumber);
-        configuration.addClassifications("Browser", "Firefox");
-        configuration.addClassifications("Branch", "release/1.0");
-        configuration.addClassifications("build", "release #2346");
+
+        // -buildnum
+        if (params.containsKey("buildnum")) {
+            String buildNumber = params.get("buildnum").get(0);
+            System.out.println("buildNumber:" + buildNumber);
+            configuration.setBuildNumber(buildNumber);
+        }
+
+
+        // notes table in the top-right corner
+        // could add more as needed
+        // ---------------------------
+        // | Browser | Firefox        |
+        // | Branch  | release/20.2.0 |
+        // | build   | daily          |
+        // | ...     | ...            |
+        // ---------------------------
+
+        // -note
+        // -note Browser:Firefox
+        if (params.containsKey("note")) {
+            for (String classification : params.get("note")){
+                String[] arr = classification.split(":");
+                System.out.println("note:" + classification);
+                if (arr.length < 2) {
+                    continue;
+                }
+//                System.out.println("- " + arr[0] + ": " + arr[1]);
+                configuration.addClassifications(arr[0], arr[1]);
+            }
+        }
+
+
         configuration.setSortingMethod(SortingMethod.NATURAL);
-//        configuration.addPresentationModes(PresentationMode.EXPAND_ALL_STEPS);
+        //configuration.addPresentationModes(PresentationMode.EXPAND_ALL_STEPS);
         configuration.addPresentationModes(PresentationMode.PARALLEL_TESTING);
         configuration.addReducingMethod(ReducingMethod.HIDE_EMPTY_HOOKS);
         // points to the demo trends which is not used for other tests
